@@ -1,13 +1,14 @@
 package ru.netology.servlet;
 
-import java.util.logging.Logger;
-import ru.netology.controller.PostController;
-import ru.netology.repository.PostRepository;
-import ru.netology.service.PostService;
-
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.logging.Logger;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import ru.netology.controller.PostController;
+import ru.netology.config.AppConfig;
 
 public class MainServlet extends HttpServlet {
   private static final Logger logger = Logger.getLogger(MainServlet.class.getName());
@@ -15,9 +16,8 @@ public class MainServlet extends HttpServlet {
 
   @Override
   public void init() {
-    final var repository = new PostRepository();
-    final var service = new PostService(repository);
-    controller = new PostController(service);
+    ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class); // Создаем контекст Spring
+    controller = context.getBean(PostController.class); // Получаем экземпляр PostController
   }
 
   @Override
@@ -25,7 +25,7 @@ public class MainServlet extends HttpServlet {
     try {
       final var path = req.getRequestURI();
       final var method = req.getMethod();
-      // Primitive routing
+
       if (method.equals("GET") && path.equals("/api/posts")) {
         controller.all(resp);
         return;
@@ -44,6 +44,7 @@ public class MainServlet extends HttpServlet {
         controller.removeById(id, resp);
         return;
       }
+
       resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
     } catch (Exception e) {
       logger.severe("Internal server error: " + e.getMessage());
