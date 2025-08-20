@@ -16,8 +16,8 @@ public class MainServlet extends HttpServlet {
 
   @Override
   public void init() {
-    ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-    controller = context.getBean(PostController.class);
+    ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class); // Создаем контекст Spring
+    controller = context.getBean(PostController.class); // Получаем экземпляр PostController
   }
 
   @Override
